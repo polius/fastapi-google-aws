@@ -1,0 +1,5 @@
+fastapi[standard]
+PyJWT
+google-auth
+requests
+boto3

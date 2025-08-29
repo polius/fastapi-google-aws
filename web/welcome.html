@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+    .message {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 30px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+
+    .aws-btn {
+      background-color: bisque;
+      transition: background-color 0.3s ease;
+    }
+
+    .aws-btn:hover {
+      background-color: #e5b77e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome!</h2>
+    <div id="name" class="message"></div>
+    <div id="email" class="message"></div>
+    <hr style="margin-top:30px">
+    <button class="aws-btn" onclick="aws_cli()" style="margin-top: 15px">Get AWS CLI</button>
+    <button class="aws-btn" onclick="aws_console()" style="margin-top: 15px">Go AWS Console</button>
+    <hr style="margin-top:15px">
+    <button onclick="logout()" style="margin-top: 15px">Logout</button>
+  </div>
+
+  <script>
+    const API_URL = '/api';
+
+    // Execute the main function when DOM has loaded
+    document.addEventListener('DOMContentLoaded', () => main());
+
+    async function main() {
+      await welcome();
+    }
+
+    async function welcome() {
+      const response = await fetch(`${API_URL}/welcome`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if ([401, 403].includes(response.status)) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const user = await response.json();
+      document.getElementById('name').innerText = user.name
+      document.getElementById('email').innerText = user.email
+    }
+
+    async function aws_cli() {
+      window.open(`${API_URL}/aws/cli`, "_blank");
+    }
+
+    async function aws_console() {
+      const response = await fetch(`${API_URL}/aws/console`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if ([401, 403].includes(response.status)) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const data = await response.json();
+      window.open(data.url, "_blank");
+    }
+
+    async function logout() {
+      window.location.href = `${API_URL}/logout`
+    }
+  </script>
+</body>
+</html>
